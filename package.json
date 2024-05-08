@@ -1,0 +1,17 @@
+{
+  "name": "blog-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node Index.js",
+    "start:dev":"nodemon Index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.0"
+  }
+}
