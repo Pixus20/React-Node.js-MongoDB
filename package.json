@@ -6,12 +6,16 @@
   "type": "module",
   "scripts": {
     "start": "node Index.js",
-    "start:dev":"nodemon Index.js"
+    "start:dev": "nodemon Index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.19.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.3.4",
     "nodemon": "^3.1.0"
   }
 }
