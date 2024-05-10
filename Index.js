@@ -1,13 +1,13 @@
-import bcrypt from 'bcrypt';
 import express from 'express';
-import { validationResult } from 'express-validator';
-import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
+import { loginValidation, postCreateValidation, registerValidation } from './Validations.js';
+import checkAuth from './utils/checkAuth.js';
 
 
-import { registerValidation } from './Validation/auth.js';
-import UserModel from './models/User.js';
+import * as PostController from './controllers/PostController.js';
+import * as UserController from './controllers/UserController.js';
+
 
 mongoose
    .connect('mongodb+srv://admin:wwwwww@cluster0.t8lee5e.mongodb.net/blog')
@@ -18,49 +18,16 @@ const app =express();
 
 app.use(express.json());
 
-app.post('/auth/register', registerValidation, async(req,res)=>{
-   try {
-      const errors=validationResult(req);
-      if(!errors.isEmpty()){
-         return res.status(400).json(errors.array())
-      }
+app.post('/auth/Login', loginValidation,UserController.login );
+app.post('/auth/register', registerValidation, UserController.register );
+app.get('/auth/me', checkAuth, UserController.getMe);
 
-      const password=req.body.password;
-      const salt= await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(password, salt);
+app.get('/posts',PostController.getAll);
+app.get('/posts/:id',PostController.getOne);
+app.post('/posts',checkAuth,postCreateValidation,PostController.create);
+app.delete('/posts/:id',checkAuth ,PostController.remove);
+app.patch('/posts/:id',checkAuth,PostController.update);
 
-      const doc= new UserModel({
-         email: req.body.email,
-         fullName: req.body.fullName,
-         avatarUrl: req.body.avatarUrl,
-         passwordHash:hash,
-      });
-
-      const user= await doc.save();
-
-      const token=jwt.sign(
-         {
-            _id: user._id,
-         },
-            'secret123',
-         {
-            expiresIn:'30d',
-         },
-      );
-
-      const{passwordHash, ...userData }=user._doc;
-
-      res.json({
-         ...userData,
-         token,
-      });
-   } catch (err) {
-      console.log(err);
-      res.status(500).json({
-         message: "Не вдалося зареєструватися!"
-      });
-   }
-});
 
 app.listen(4444, (err)=>{
    if (err){
